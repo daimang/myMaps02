@@ -1,34 +1,32 @@
 package com.family.myMaps02
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import androidx.core.content.ContextCompat
+
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
+import android.os.Bundle
 import android.os.Looper
-import android.os.PersistableBundle
 import android.util.Log
-import androidx.core.app.ActivityCompat
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.family.myMaps02.databinding.ActivityMapsBinding
-import com.google.android.gms.maps.model.CameraPosition
-
-
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.family.myMaps02.databinding.ActivityMapsBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.database.FirebaseDatabase
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -83,6 +81,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+
+
+
         // Add a marker in Sydney and move the camera
         //val sydney = LatLng(-34.0, 151.0)
 //        val seoul = LatLng(37.5663, 126.9779)
@@ -112,10 +113,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 //    }
 @SuppressLint("MissingPermission")
 fun setUpdateLocationListener() {
-    var locationRequest: LocationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000 )
+    var locationRequest: LocationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000 * 5 )
         .setMinUpdateDistanceMeters(0f)
         .build()
 
+
+    //val database = FirebaseDatabase.getInstance()
+   // val myRef = database.getReference("message")
+    val database = FirebaseDatabase.getInstance("https://mymaps02-default-rtdb.asia-southeast1.firebasedatabase.app/")
+   // val database = FirebaseDatabase.g.database("https://mymaps02-default-rtdb.asia-southeast1.firebasedatabase.app/")
+    val myRef = database.getReference("message")
+    myRef.setValue("Hello, World!")
     locationCallback = object : LocationCallback() {
         // Your implementation of the location callback goes here
        override fun onLocationResult(locationResult: LocationResult) {
@@ -123,6 +131,7 @@ fun setUpdateLocationListener() {
                 for((i, location) in it.locations.withIndex()){
                     Log.d( "위치", "$i ${location.latitude},${location.longitude} ")
                     setLastLocation(location)
+                    myRef.setValue("Hello, World!")
                 }
             }
         }
@@ -141,6 +150,10 @@ fun setUpdateLocationListener() {
             .zoom(17f)
             .build()
         val camera = CameraUpdateFactory.newCameraPosition(cameraPosition)
+
+
+
+
 mMap.clear()
         mMap.addMarker(marker)
         mMap.moveCamera(camera)

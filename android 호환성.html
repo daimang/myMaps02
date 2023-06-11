@@ -1,0 +1,460 @@
+  <head>
+  <meta charset="utf-8">
+    <title>HTML</title>
+    <style>
+      * {
+        font-size: 20px;
+        font-family: Consolas, sans-serif;
+      }
+      textarea {
+        width: 1000px;
+        height: 800px;
+      }
+    </style>
+  </head>
+<p>
+<textarea  style="﻿overflow-y:hidden; overflow-x:hidden; resize: auto;" required >
+Unsupported Java. 
+Your build is currently configured to use Java 17.0.6 and Gradle 7.0.2.
+
+Possible solution:
+ - Upgrade Gradle wrapper to 7.2 version and re-import the project
+* file > settings > Build,Executions,Deployment > Build Tools > Gradle 에서 jdk 설정 
+1. Grdle Scripts > build.gradle(:project) 파일에서  gradle plugin 버전 확인
+예제>
+dependencies {
+        classpath "com.android.tools.build:gradle:7.0.3"
+		}
+		
+2. file > project structure  > project 에서 gradle 버전확인
+gradle  :7.0.2 
+   file > project structure > Modules - Properties 에서 
+    sdk, compatibility 확인해서 jdk 적용하고 sync 시도하자.
+3. gradle plugin - gradle 호환가능 확인하기
+gradle plugin :7.0.3 - gradle  :7.0.2 : 가능
+4. java 버전에 해당하는 최소 gradle 버전 확인하기
+16 - 7.0
+17 - 7.3
+: 현재 17버전이므로 최소 gradle 7.3 필요 
+5-1.gradle 버전을 지원하는 gradle plugin(wrapper) 확인
+plugin(wrapper) - gradle    
+:7.2 - 7.3.3
+
+5-2.현젼 설정되어 있는 gradle 에 맞는 java 설치하는 방법도 있다. 
+java - gradle 
+16 - 7.0
+
+* gradle 이 낮은 버전일 경우 android studio 호환성 확인 해야한다. 
+Flamingo | 2022.2.1	3.2~8.0 (gradle plugin)
+
+[해결방안 적용순서]
+1=> 2번의 jdk 우선 적용해 본다. 호환성이 맞지 않으면 되지 않는다. 
+2==> 위 실패시 추천하는 jdk 다운로드해서 해본다. 
+3===> Possible solution 이 적합하네 ~, 필요없는 gradle upgrade 는 추천하여도 하지 않아도 된다.
+* 9-1. build.gradle(:app) 에서  targetSdk 31 확인필요 - Device Manager 확인
+* 9-2. sdk compiler 설치필요시 설치 
+* 9-3. Cause: org/gradle/api/tasks/testing/AbstractTestTask : jdk or ?
+* 9-4. file > project structure 에서  gradle plugin, gradle 수정가능
+* 9-5. file > project structure > suggestions 에서 업그레이드 모듈 진행가능
+* 9-6. compileSdk 29 -> compileSdkVersion 29, compile -> implementation
+* 9-7. refactor > migration to androidx... ( 9-4가 안될때, gradle plugin 2.3 등 old 버전일 경우 가능성 높다)
+* 9-8. kotlin 버전 확인
+* device manager 에서 run 실팽시 logcat 에서 로그확인하기 
+
+https://mimisongsong.tistory.com/14
+(1). import android.support.v7.app.AppCompatActivity;에서 
+import androidx.appcompat.app.AppCompatActivity; 로 수정
+(2). build.gradle(Module:app) 에서  implementation 'com.androidx.support:appcompat-v7:28.0.0' 을
+implementation 'com.androidx.support:appcompat:1.0.0' 으로 수정
+
+android.support.v7.widget.CardView -> android.cardview.widget.CardView
+
+- [Flutter Error] Warning: Mapping new ns to old ns …
+https://sianux1209.github.io/flutter/flutter_gradle_error/
+
+- Ensure that the following Android Key exists:
+  API Key: AIzaSyC3nqG4sqvad_8Ht3Ay_ajolmqxR1DF-UQ
+https://tristan91.tistory.com/135 
+
+- 구글맵 : sdk 11
+Warning: Mapping new ns http://schemas.android.com/repository/android/common/02 to old ns http://schemas.android.com/repository/android/common/01
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.google.gms:google-services:4.3.14' 
+~~
+gradle.properties 에서 grade jdk 설정 가능
+org.gradle.java.home=C:\
+
+settins ~~  에서 gradle project jdk 위치 지정 (편법)
+D:\android\jdk 에서 설정하고자하는 jdk 만 남기고 D:\android\jdk\새폴더 로 이동후 android studio 에서 jdk 지정후 재시작
+
+~~~~
+fox google maps  생성
+1.  SHA-1 certificate fingerprint:만들기
+terminal > gradlew signingReport 
+google_maps_api.xml 수정하고 api 키 생성 -> 안하면 앱실행시 logcat 2023-06-10 14:17:58.200 16097-16199/com.lastjob.test9 E/Google Maps Android API: Authorization failure. 오류 발생
+
+2.build.gradle(project)
+buildscript {
+    repositories {
+        maven {  url 'https://maven.google.com'} // 필요시
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:7.0.4"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20" //  1.5.20, 1.6.10
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+3. build.gradle(app)
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.10.1'
+//    implementation 'androidx.appcompat:appcompat:1.6.1'
+//    implementation 'com.google.android.material:material:1.9.0'
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0")) // 필요시
+    implementation 'androidx.appcompat:appcompat:1.5.0'
+    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+}
+Can't determine type for tag '<macro name="m3_comp_assist_chip_container_shape">?attr/shapeAppearanceCornerSmall</macro>'
+->  implementation 'androidx.appcompat:appcompat:1.5.0'
+    implementation 'com.google.android.material:material:1.6.0'
+Duplicate class kotlin.collections.jdk8.CollectionsJDK8Kt found in modules jetified-kotlin-stdlib-1.8.10 (org.jetbrains.kotlin:kotlin-stdlib:1.8.10) and jetified-kotlin-stdlib-jdk8-1.7.20 (org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20)
+-> implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+또는 
+constraints {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0"){
+            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
+        }
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0"){
+            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+        }
+    }
+
+전이 의존성에서 최신 kotlin-stdlib 버전 사용
+dependencies 내에서 implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.0")예를 들어 명시 적으로 Kotlin 버전 1.8.0 이상을 작성하는 경우, Kotlin Gradle 플러그인은 전이적이고 의존성을 위해 kotlin-stdlib-jdk7Kotlin kotlin-stdlib-jdk8버전을 사용합니다. 이것은 다른 stdlib 버전에서 클래스 중복을 피하기 위해 이루어집니다. ( kotlin-stdlib-jdk7와의 병합kotlin-stdlib-jdk8kotlin-stdlib 에 대해 더 자세히 알아보기) 
+Gradle 속성을 사용하여이 동작을 kotlin.stdlib.jdk.variants.version.alignment 비활성화 할 수 있습니다.
+kotlin.stdlib.jdk.variants.version.alignment=false
+
+버전을 정렬하는 데 문제가 발생하면 빌드 스크립트에서 kotlin-bom 플랫폼 종속성을 선언하여 Kotlin BOM을 통해 모든 버전을 정렬합니다.
+implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+다른 경우와 권장 해결 방법은 문서 에서 확인하십시오.
+
+
+4.avd api 30 , google play에 로그인 하기
+~~~
+could not parse the android application module's gradle config
+: Project Structure - Modules - properties : Compile Sdk Version : 30, Build Tools Version:30.0.2  저장후 sync 
+
+Firebase: Couldn't find registrable Android clients in project.
+:
+https://console.firebase.google.com/ 에서 프로젝트 만들고 프로젝트 설정에서 앱등록 후 google-services.json 다운로드 
+D:\android\project\theMaps01\app 에 복사해서 넣기 
+connect error 시 Compile Sdk Version, Build Tools Version  지우고  sync 이리저리 해 본다. 
+
+
+com.google.firebase.database.DatabaseException: Failed to get FirebaseDatabase instance: Specify DatabaseURL within FirebaseApp or from your getInstance() call.
+~~~
+- themaps01프로젝트에 themaps02 앱등록 : 조회할려면 등록하고 , android studio tools - firebase : connect, add 해 줘야 한다.  
+https://console.firebase.google.com/project/themaps01/overview -  앱 추가 : android  
+com.lastjob.themaps02
+SHA1: BD:53:9D:24:16:EB:C9:3A:D8:B0:F0:56:A9:BC:A3:71:8B:E9:F3:E4
+~~~
+
+  Caused by: java.lang.IllegalStateException: Default FirebaseApp is not initialized in this process com.lastjob.themaps02. Make sure to call FirebaseApp.initializeApp(Context) first.
+
+</textarea>
+</p>
+
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Java Compatibility</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">First Gradle version to support it</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">9</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">11</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">12</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">13</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">14</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">15</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">16</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">17</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">18</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7.5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">19</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7.6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">20</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8.1 <span class="yellow">⚠</span></p></td>
+</tr>
+</tbody>
+</table>
+
+
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Embedded Kotlin version</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gradle version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Embedded Kotlin version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kotlin Language version</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3.10</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3.11</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3.20</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3.21</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3.31</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3.41</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3.50</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3.61</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3.70</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3.71</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3.72</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.4.20</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7.0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.4.31</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7.2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.5.21</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7.3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.5.31</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7.5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.6.21</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7.6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.7.10</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8.0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.8.10</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.8</p></td>
+</tr>
+</tbody>
+</table>
+
+<div class="devsite-table-wrapper"><table>
+<tbody><tr><th>플러그인 버전</th><th>필요한 최소 Gradle 버전</th></tr>
+<tr><td>8.1</td><td>8.0</td></tr>
+<tr><td>8.0</td><td>8.0</td></tr>
+<tr><td>7.4</td><td>7.5</td></tr>
+<tr><td>7.3</td><td>7.4</td></tr>
+<tr><td>7.2</td><td>7.3.3</td></tr>
+<tr><td>7.1</td><td>7.2</td></tr>
+<tr><td>7.0</td><td>7.0</td></tr>
+<tr><td>4.2.0+</td><td>6.7.1</td></tr>
+
+    <tr><td>4.1.0+</td><td>6.5+</td></tr>
+    <tr><td>4.0.0+</td><td>6.1.1+</td></tr>
+    <tr><td>3.6.0~3.6.4</td><td>5.6.4+</td></tr>
+    <tr><td>3.5.0~3.5.4</td><td>5.4.1+</td></tr>
+    <tr><td>3.4.0~3.4.3</td><td>5.1.1+</td></tr>
+    <tr><td>3.3.0~3.3.3</td><td>4.10.1+</td></tr>
+    <tr><td>3.2.0~3.2.1</td><td>4.6+</td></tr>
+    <tr><td>3.1.0+</td><td>4.4+</td></tr>
+    <tr><td>3.0.0+</td><td>4.1+</td></tr>
+    <tr><td>2.3.0+</td><td>3.3+</td></tr>
+    <tr><td>2.1.3~2.2.3</td><td>2.14.1~3.5</td></tr>
+    <tr><td>2.0.0~2.1.2</td><td>2.10~2.13</td></tr>
+    <tr><td>1.5.0</td><td>2.2.1~2.13</td></tr>
+    <tr><td>1.2.0~1.3.1</td><td>2.2.1~2.9</td></tr>
+    <tr><td>1.0.0~1.1.3</td><td>2.2.1~2.3</td></tr>
+    </tbody></table></div>
+  </devsite-expandable>
+</div>
+<div class="devsite-table-wrapper"><table>
+  <tbody><tr><th>Android 스튜디오 버전</th>
+  <th>필요한 플러그인 버전</th>
+
+  </tr><tr>
+    <td>Giraffe | 2022.3.1</td>
+    <td>3.2~8.1</td>
+  </tr>
+  <tr>
+    <td>Flamingo | 2022.2.1</td>
+    <td>3.2~8.0</td>
+  </tr>
+  <tr>
+    <td>Electric Eel | 2022.1.1</td>
+    <td>3.2~7.4</td>
+  </tr>
+  <tr>
+    <td>Dolphin | 2021.3.1</td>
+    <td>3.2~7.3</td>
+  </tr>
+  <tr>
+    <td>Chipmunk | 2021.2.1</td>
+    <td>3.2~7.2</td>
+  </tr>
+   <tr>
+    <td>Bumblebee | 2021.1.1</td>
+    <td>3.2~7.1</td>
+  </tr>
+  <tr>
+    <td>Arctic Fox | 2020.3.1</td>
+    <td>3.1~7.0</td>
+  </tr>
+</tbody></table></div>
+<div>
+<table>
+<tbody>
+<tr>
+<td><b>Compose Compiler Version</b></td>
+<td><b>     kotlin Version</b></td>
+</tr>
+<tr>
+<td><span style="font-weight: 400;">1.3.0</span></td>
+<td><span style="font-weight: 400;">1.7.10</span></td>
+</tr>
+<tr>
+<td><span style="font-weight: 400;">1.3.0-rc01</span></td>
+<td><span style="font-weight: 400;">1.7.10</span></td>
+</tr>
+<tr>
+<td><span style="font-weight: 400;">1.3.0-beta01</span></td>
+<td><span style="font-weight: 400;">1.7.10</span></td>
+</tr>
+<tr>
+<td><span style="font-weight: 400;">1.2.0</span></td>
+<td><span style="font-weight: 400;">1.7.0</span></td>
+</tr>
+<tr>
+<td><span style="font-weight: 400;">1.2.0-rc01</span></td>
+<td><span style="font-weight: 400;">1.6.21</span></td>
+</tr>
+<tr>
+<td><span style="font-weight: 400;">1.2.0-beta03</span></td>
+<td><span style="font-weight: 400;">1.6.21</span></td>
+</tr>
+<tr>
+<td><span style="font-weight: 400;">1.2.0-alpha08</span></td>
+<td><span style="font-weight: 400;">1.6.20</span></td>
+</tr>
+<tr>
+<td><span style="font-weight: 400;">1.1.0</span></td>
+<td><span style="font-weight: 400;">1.6.10</span></td>
+</tr>
+<tr>
+<td><span style="font-weight: 400;">1.1.1</span></td>
+<td><span style="font-weight: 400;">1.6.10</span></td>
+</tr>
+<tr>
+<td><span style="font-weight: 400;">1.1.0-rc03</span></td>
+<td><span style="font-weight: 400;">1.6.10</span></td>
+</tr>
+</tbody></table></div>
